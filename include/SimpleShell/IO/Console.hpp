@@ -9,9 +9,14 @@ namespace shell {
     public:
         explicit Console(void);
 
+        [[nodiscard]] std::string getCommand(void);
+
         void printPrompt(void);
 
+        [[nodiscard]] std::string getLineFromStdin(void);
+
     private:
+
         void actualizeUser(void);
 
         void actualizeDirectory(void);

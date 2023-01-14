@@ -4,6 +4,6 @@
 
 int main(void) {
     shell::Console console;
-    console.printPrompt();
+    std::cout << console.getCommand() << '\n';
     return 0;
 }

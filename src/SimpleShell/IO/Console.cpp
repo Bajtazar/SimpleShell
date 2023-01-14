@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <cstring>
+#include <iostream>
 
 extern "C" {
     #include <unistd.h>
@@ -20,8 +21,19 @@ namespace shell {
             throw std::runtime_error{"Unknown error during console init"};
     }
 
+    [[nodiscard]] std::string Console::getCommand(void) {
+        printPrompt();
+        return getLineFromStdin();
+    }
+
     void Console::printPrompt(void) {
-        std::printf("%s@%s$", user.c_str(), directory.c_str());
+        std::cout << user << '@' << directory << '$';
+    }
+
+    [[nodiscard]] std::string Console::getLineFromStdin(void) {
+        std::string command;
+        std::getline(std::cin, command);
+        return command;
     }
 
     void Console::actualizeUser(void) {
