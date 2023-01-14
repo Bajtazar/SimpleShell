@@ -17,7 +17,7 @@ namespace shell {
             return std::any{ praseQuotedString(std::next(command.begin()), std::prev(command.end())) };
         else if (isInvalidQuotedString(command))
             throw ParsingException{"\"" + command + "\" string is invalid"};
-        return parseConsoleString(command);
+        return command;
     }
 
     bool StringParser::isQuotedString(std::string const& quoted) const {
@@ -43,17 +43,6 @@ namespace shell {
                 throw ParsingException{"The \"\\"s + *iter + "\" char is invalid"s};
         }
         return "";
-    }
-
-    std::string StringParser::parseConsoleString(std::string const& string) const {
-        static std::regex pattern{R"([a-zA-Z0-9_.,/\-=]+)"};
-
-        if (not std::regex_match(string, pattern))
-            throw ParsingException{
-                "\"" + string +
-                "\" does not follow the string rules. Raw console string must "
-                "satisfy the [a-zA-Z0-9_.,/\\-=]+ regex"};
-        return string;
     }
 
     std::optional<char> StringParser::parseAdvancedChar(char nextChar) const {

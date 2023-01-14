@@ -42,8 +42,10 @@ namespace shell {
         while (iter != string.end()) {
             auto quoteIter = std::find(iter, string.end(), quote);
             if (quoteIter != iter)
-                result.push_back(trim({iter, quoteIter}));
+                std::ranges::move(split({iter, quoteIter}), std::back_inserter(result));
             auto quoteEnd = quoteIter;
+            if (quoteIter == string.end())
+                return result;
             while (quoteEnd != string.end()) {
                 quoteEnd = std::find(std::next(quoteEnd), string.end(), quote);
                 if (*std::prev(quoteEnd) != '\\')

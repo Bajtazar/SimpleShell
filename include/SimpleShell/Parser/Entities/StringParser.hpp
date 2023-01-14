@@ -22,8 +22,6 @@ namespace shell {
 
         std::string praseQuotedString(Iter iter, Iter const& sent) const;
 
-        std::string parseConsoleString(std::string const& string) const;
-
         std::optional<char> parseAdvancedChar(char nextChar) const;
     };
 
