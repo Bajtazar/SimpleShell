@@ -1,32 +1,9 @@
 #pragma once
 
 #include <SimpleShell/Parser/ParsingEntity.hpp>
-
-#include <vector>
-#include <string>
-#include <variant>
+#include <SimpleShell/System/Command.hpp>
 
 namespace shell {
-
-    class Command {
-    public:
-        using Args = std::vector<std::string>;
-        using Invocable = std::function<void(Args const&)>;
-
-        explicit Command(Invocable invocable);
-
-        explicit Command(std::string const& path);
-
-        void operator() (Args const& args);
-    private:
-        using State = std::variant<Invocable, std::string>;
-
-        State state;
-
-        char** prepareArgTable(Args const& args);
-
-        std::string getPureCommand(void);
-    };
 
     class CommandParser : public ParsingEntity {
     public:

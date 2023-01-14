@@ -13,45 +13,7 @@ extern "C" {
     #include <sys/stat.h>
 }
 
-#include <iostream>
-
 namespace shell {
-
-
-    Command::Command(Invocable invocable) :
-        state{std::move(invocable)} {}
-
-    Command::Command(std::string const& path) :
-        state{path} {}
-
-    std::string Command::getPureCommand(void) {
-        auto const& command = std::get<std::string>(state);
-        auto iter = std::ranges::find(command, '/');
-        if (iter == command.end())
-            return command;
-        return { iter, command.end() };
-    }
-
-    char** Command::prepareArgTable(Args const& args) {
-        char** table = new char*[args.size() + 2]{};
-        auto const command = getPureCommand();
-        table[0] = new char[command.size() + 1]{};
-        std::ranges::copy(command, table[0]);
-        for (size_t i = 1; auto const& arg : args) {
-            table[i] = new char[arg.size() + 1]{};
-            std::ranges::copy(arg, table[i++]);
-        }
-        table[args.size() + 1] = nullptr;
-        return table;
-    }
-
-    void Command::operator()(Args const& args) {
-        if (std::holds_alternative<Invocable>(state))
-            std::get<Invocable>(state)(args);
-        else {
-            execvp(std::get<std::string>(state).c_str(), prepareArgTable(args));
-        }
-    }
 
     void CommandParser::registerCallbacks(
         [[maybe_unused]] ParsingEntityMap const& parsinMap) {}

@@ -1,8 +1,6 @@
 #pragma once
 
-#include <SimpleShell/Parser/Entities/CommandParser.hpp>
-#include <SimpleShell/Parser/Entities/VariableParser.hpp>
-#include <SimpleShell/Parser/Entities/StringParser.hpp>
+#include <SimpleShell/Parser/ParsingEntity.hpp>
 
 namespace shell {
 

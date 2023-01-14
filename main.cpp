@@ -1,20 +1,24 @@
-#include <iostream>
-
 #include <SimpleShell/IO/Console.hpp>
-
+#include <SimpleShell/Parser/Entities/CommandParser.hpp>
+#include <SimpleShell/Parser/Entities/ProgramParser.hpp>
 #include <SimpleShell/Parser/Entities/StatementParser.hpp>
+#include <SimpleShell/Parser/Entities/StringParser.hpp>
+#include <SimpleShell/Parser/Entities/VariableParser.hpp>
 #include <SimpleShell/Parser/Parser.hpp>
 
-#include <regex>
-
-void setParsers(void) {
-    shell::Parser::registerEntity("string", std::make_unique<shell::StringParser>());
-    shell::Parser::registerEntity("variable", std::make_unique<shell::VariableParser>());
-    shell::Parser::registerEntity("command", std::make_unique<shell::CommandParser>());
-
-    shell::Parser::registerEntity("program", std::make_unique<shell::StatementParser>());
+template <std::derived_from<shell::ParsingEntity> Tp>
+static void registerEntity(std::string const& name) {
+    shell::Parser::registerEntity(name, std::make_unique<Tp>());
 }
 
+static void setParsers(void) {
+    registerEntity<shell::StringParser>("string");
+    registerEntity<shell::VariableParser>("variable");
+    registerEntity<shell::CommandParser>("command");
+    registerEntity<shell::StatementParser>("statement");
+
+    registerEntity<shell::ProgramParser>("program");
+}
 
 int main(void) {
     setParsers();

@@ -1,4 +1,5 @@
 #include <SimpleShell/Parser/Entities/StatementParser.hpp>
+#include <SimpleShell/Parser/Entities/CommandParser.hpp>
 #include <SimpleShell/Util/Strings.hpp>
 
 #include <ranges>
@@ -19,10 +20,9 @@ namespace shell {
         for (auto& str : parsed | std::views::drop(1))
           args.push_back(std::any_cast<std::string>(
               (*(str.front() == '$' ? variableParser : stringParser))(str)));
+        statement.setArgs(std::move(args));
 
-        return {Result(
-            [args = std::move(args),
-             statement = std::move(statement)]() mutable { statement(args); })};
+        return statement;
     }
 
 }
