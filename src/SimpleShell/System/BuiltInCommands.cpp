@@ -46,6 +46,11 @@ namespace shell {
                     false);
                 if (status == -1)
                     throw std::runtime_error{"Variable cannot be exportex"};
+            }},
+            {"exit", [](Args const& args) {
+                if (not args.empty())
+                    throw std::runtime_error{"Exit does not take any argument"};
+                exit(0);
             }}
     }};
 

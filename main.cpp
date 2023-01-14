@@ -26,7 +26,11 @@ int main(void) {
     shell::Parser parser;
 
     for (;;) {
-        parser(console.getCommand());
+        try {
+            parser(console.getCommand());
+        } catch(std::exception const& exception) {
+            std::puts(exception.what());
+        }
     }
 
     return 0;
