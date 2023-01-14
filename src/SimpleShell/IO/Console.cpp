@@ -27,6 +27,8 @@ namespace shell {
     }
 
     void Console::printPrompt(void) {
+        actualizeUser();
+        actualizeDirectory();
         std::cout << user << '@' << directory << '$';
     }
 
