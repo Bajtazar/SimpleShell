@@ -14,8 +14,10 @@ add_executable(${PROJECT_NAME} main.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/StatementParser.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/CommandParser.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/StringParser.cpp
+    ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/IoctlParser.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/LocalVariables.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/ChildProcess.cpp
+    ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/IoController.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/Command.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/Util.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/BuiltInCommands.cpp
