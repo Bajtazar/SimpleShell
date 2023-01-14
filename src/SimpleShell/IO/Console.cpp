@@ -29,7 +29,7 @@ namespace shell {
     void Console::printPrompt(void) {
         actualizeUser();
         actualizeDirectory();
-        std::cout << user << '@' << directory << '$';
+        std::cout << '[' << user << ']' << directory << "$ ";
     }
 
     [[nodiscard]] std::string Console::getLineFromStdin(void) {

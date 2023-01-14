@@ -46,13 +46,13 @@ namespace shell {
     }
 
     std::string StringParser::parseConsoleString(std::string const& string) const {
-        static std::regex pattern{R"([a-zA-Z0-9_.,/\-]+)"};
+        static std::regex pattern{R"([a-zA-Z0-9_.,/\-=]+)"};
 
         if (not std::regex_match(string, pattern))
             throw ParsingException{
                 "\"" + string +
                 "\" does not follow the string rules. Raw console string must "
-                "satisfy the [a-zA-Z0-9_.,/\\-]+ regex"};
+                "satisfy the [a-zA-Z0-9_.,/\\-=]+ regex"};
         return string;
     }
 
