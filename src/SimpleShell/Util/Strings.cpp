@@ -19,6 +19,10 @@ namespace shell {
         return { string.begin(), iter.base() };
     }
 
+    std::string trim(std::string const& string) {
+        return ltrim(rtrim(string));
+    }
+
     std::vector<std::string> split(std::string string) {
         std::vector<std::string> splitted;
         string = ltrim(string);
@@ -29,6 +33,28 @@ namespace shell {
             string = ltrim(string);
         }
         return splitted;
+    }
+
+    std::vector<std::string> splitOnQuotes(std::string string, char quote) {
+        string = trim(string);
+        std::vector<std::string> result;
+        auto iter = string.begin();
+        while (iter != string.end()) {
+            auto quoteIter = std::find(iter, string.end(), quote);
+            if (quoteIter != iter)
+                result.push_back(trim({iter, quoteIter}));
+            auto quoteEnd = quoteIter;
+            while (quoteEnd != string.end()) {
+                quoteEnd = std::find(std::next(quoteEnd), string.end(), quote);
+                if (*std::prev(quoteEnd) != '\\')
+                    break;
+            }
+            if (quoteEnd == string.end())
+                throw std::runtime_error{"Invalid quoted range"};
+            result.emplace_back(quoteIter, std::next(quoteEnd));
+            iter = std::next(quoteEnd);
+        }
+        return result;
     }
 
 }

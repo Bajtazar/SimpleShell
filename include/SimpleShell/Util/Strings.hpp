@@ -9,6 +9,10 @@ namespace shell {
 
     std::string rtrim(std::string const& string);
 
+    std::string trim(std::string const& string);
+
     std::vector<std::string> split(std::string string);
+
+    std::vector<std::string> splitOnQuotes(std::string string, char quote);
 
 }
