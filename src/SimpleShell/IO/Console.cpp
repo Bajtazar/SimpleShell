@@ -52,9 +52,9 @@ namespace shell {
     void Console::formatDirectoryStr(std::string_view directory) {
         auto home = getHome();
         auto const& [iter1, iter2] = std::ranges::mismatch(home, directory);
-        if (iter2 != directory.end())
+        if (iter2 != directory.end() && iter1 == home.end())
             this->directory = '~' + std::string{iter2, directory.end()};
-        else if (iter2 == directory.end())
+        else if (iter2 == directory.end() && iter1 == home.end())
             this->directory = '~';
         else
             this->directory = directory;
