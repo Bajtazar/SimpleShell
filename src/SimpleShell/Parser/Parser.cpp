@@ -15,7 +15,7 @@ namespace shell {
     }
 
     int32_t Parser::operator()(std::string const& command) {
-        std::invoke(*parsingMap.at("program"), command);
+        (*parsingMap.at("program"))(command);
         return 0;
     }
 

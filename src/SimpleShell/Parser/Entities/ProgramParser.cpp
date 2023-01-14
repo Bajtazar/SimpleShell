@@ -14,6 +14,7 @@ namespace shell {
             ChildProcess process{std::move(invocable)};
         else
             invocable();
+        return 0;
     }
 
 }
