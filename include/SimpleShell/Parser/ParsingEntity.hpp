@@ -1,5 +1,6 @@
 #pragma once
 
+#include <any>
 #include <map>
 #include <string>
 #include <memory>
@@ -19,7 +20,7 @@ namespace shell {
 
         virtual void registerCallbacks(ParsingEntityMap const& parsinMap) = 0;
 
-        virtual void operator() (std::string const& command) = 0;
+        virtual std::any operator() (std::string const& command) = 0;
 
         virtual ~ParsingEntity(void) noexcept = default;
     };

@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(${PROJECT_NAME} main.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/IO/Console.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Parser.cpp
+    ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/StringParser.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/ChildProcess.cpp
 )
 

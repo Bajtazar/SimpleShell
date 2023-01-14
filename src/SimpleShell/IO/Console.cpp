@@ -33,6 +33,8 @@ namespace shell {
     [[nodiscard]] std::string Console::getLineFromStdin(void) {
         std::string command;
         std::getline(std::cin, command);
+        if (command.back() == '\n')
+            command.pop_back();
         return command;
     }
 

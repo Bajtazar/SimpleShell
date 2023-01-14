@@ -2,8 +2,12 @@
 
 #include <SimpleShell/IO/Console.hpp>
 
+#include <SimpleShell/Parser/Entities/StringParser.hpp>
+
 int main(void) {
     shell::Console console;
-    std::cout << console.getCommand() << '\n';
+    shell::StringParser parser;
+    std::cout << std::any_cast<std::string>(parser(console.getCommand())) << '\n';
+
     return 0;
 }
