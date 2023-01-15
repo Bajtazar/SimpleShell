@@ -7,8 +7,6 @@ extern "C" {
     #include <fcntl.h>
 }
 
-#include <iostream>
-
 namespace shell {
 
     IoctlParser::Descrpitors::Descrpitors(void) :

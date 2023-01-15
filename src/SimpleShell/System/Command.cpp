@@ -50,8 +50,8 @@ namespace shell {
     }
 
     void Command::operator()(void) {
-        CallbackGuard pipeguard{std::move(pipeline)};
-        CallbackGuard guard{std::move(callbacks)};
+        CallbackGuard pipeguard{pipeline};
+        CallbackGuard guard{callbacks};
         if (std::holds_alternative<Invocable>(state))
             std::get<Invocable>(state)(args);
         else {
@@ -63,15 +63,15 @@ namespace shell {
         forcedExternal = true;
     }
 
-    Command::CallbackGuard::CallbackGuard(Callbacks&& invocables) {
-        for (auto&& [opener, closer] : invocables) {
+    Command::CallbackGuard::CallbackGuard(Callbacks& invocables) :
+        invocables{invocables}
+    {
+        for (auto const& [opener, closer] : invocables)
             opener();
-            this->invocables.push_back(std::move(closer));
-        }
     }
 
     Command::CallbackGuard::~CallbackGuard(void) {
-        for (auto& closer : this->invocables)
+        for (auto const& [opener, closer] : invocables)
             closer();
     }
 

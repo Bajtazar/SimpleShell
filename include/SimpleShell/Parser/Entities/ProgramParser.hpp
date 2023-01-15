@@ -12,7 +12,7 @@ namespace shell {
 
         std::any operator() (std::string const& command) override;
     private:
-        ParsingEntity* expressionParser = nullptr;
+        ParsingEntity* pipeParser = nullptr;
     };
 
 }

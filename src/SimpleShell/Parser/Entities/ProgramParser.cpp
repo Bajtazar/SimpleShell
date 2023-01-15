@@ -5,11 +5,11 @@
 namespace shell {
 
     void ProgramParser::registerCallbacks(ParsingEntityMap const& parsinMap) {
-        expressionParser = parsinMap.at("expression").get();
+        pipeParser = parsinMap.at("pipe").get();
     }
 
     std::any ProgramParser::operator() (std::string const& command) {
-        auto invocable = std::any_cast<Command>((*expressionParser)(command));
+        auto invocable = std::any_cast<Command>((*pipeParser)(command));
         if (invocable.isExternalProgram())
             ChildProcess process{std::move(invocable)};
         else

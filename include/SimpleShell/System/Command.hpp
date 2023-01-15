@@ -35,7 +35,7 @@ namespace shell {
 
         class CallbackGuard {
         public:
-            explicit CallbackGuard(Callbacks&& invocables);
+            explicit CallbackGuard(Callbacks& invocables);
 
             CallbackGuard(CallbackGuard const&) = delete;
 
@@ -43,7 +43,7 @@ namespace shell {
 
             ~CallbackGuard(void);
         private:
-            std::vector<Callback> invocables;
+            Callbacks& invocables;
         };
 
         Callbacks callbacks;
