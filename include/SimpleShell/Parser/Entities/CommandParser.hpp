@@ -13,7 +13,6 @@ namespace shell {
 
         std::any operator() (std::string const& command) override;
     private:
-
         bool isSpecialDot(std::string const& command) const;
 
         bool isUsrBinExec(std::string const& command) const;

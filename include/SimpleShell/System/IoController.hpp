@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cinttypes>
-
+#include <functional>
+#include <map>
 #include <optional>
 
 namespace shell {
@@ -28,6 +29,10 @@ namespace shell {
                                descriptor_t target) const;
     };
 
+    template <class Tp>
+    concept Restorable = requires(Tp& tp) { tp.restore(); };
+
+    template <Restorable Tp>
     class IoGuardian {
     public:
         explicit IoGuardian(IoController& controller);
@@ -41,4 +46,27 @@ namespace shell {
         IoController& controller;
     };
 
+    class DeferredIoctl {
+    public:
+        using descriptor_t = typename IoController::descriptor_t;
+        using Callback = std::function<void(void)>;
+        using ExchangeMap = std::map<uint8_t, descriptor_t>;
+
+        explicit DeferredIoctl(
+            ExchangeMap const& exchangeMap,
+            Callback&& callback = {});
+
+        void setCallback(Callback&& callback);
+
+        void change(void);
+
+        void restore(void);
+    private:
+        IoController controller;
+        ExchangeMap exchangeMap;
+        Callback callback;
+    };
+
 }
+
+#include <SimpleShell/System/IoController.tpp>

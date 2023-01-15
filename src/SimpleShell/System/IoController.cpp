@@ -38,11 +38,26 @@ namespace shell {
         handler = std::nullopt;
     }
 
-    IoGuardian::IoGuardian(IoController& controller) :
-        controller{controller} {}
+    DeferredIoctl::DeferredIoctl(ExchangeMap const& exchangeMap,
+                                 Callback&& callback)
+        : exchangeMap{exchangeMap}, callback{std::move(callback)} {}
 
-    IoGuardian::~IoGuardian(void) {
+    void DeferredIoctl::change(void) {
+        if (exchangeMap.contains(STDIN_FILENO))
+            controller.setStdin(exchangeMap.at(STDIN_FILENO));
+        if (exchangeMap.contains(STDOUT_FILENO))
+            controller.setStdout(exchangeMap.at(STDOUT_FILENO));
+        if (exchangeMap.contains(STDERR_FILENO))
+            controller.setStdout(exchangeMap.at(STDERR_FILENO));
+    }
+
+    void DeferredIoctl::setCallback(Callback&& callback) {
+        this->callback = std::move(callback);
+    }
+
+    void DeferredIoctl::restore(void) {
         controller.restore();
+        callback();
     }
 
 }
