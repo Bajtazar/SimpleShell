@@ -35,6 +35,19 @@ namespace shell {
         return splitted;
     }
 
+    std::vector<std::string> splitOn(std::string string, char term) {
+        std::vector<std::string> splitted;
+        auto prev = string.begin();
+        auto iter = std::ranges::find(string, term);
+        for (; iter != string.end(); iter = std::ranges::find(iter, string.end(), term)) {
+            splitted.emplace_back(prev, iter);
+            prev = ++iter;
+        }
+        if (prev != string.end())
+            splitted.emplace_back(prev, iter);
+        return splitted;
+    }
+
     std::vector<std::string> splitOnQuotes(std::string string, char quote) {
         string = trim(string);
         std::vector<std::string> result;

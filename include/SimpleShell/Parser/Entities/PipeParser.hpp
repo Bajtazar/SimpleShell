@@ -18,8 +18,6 @@ namespace shell {
 
         ParsingEntity* expressionParser = nullptr;
 
-        std::vector<std::string> splitOnPipe(std::string const& command) const;
-
         void createPipes(std::vector<Command>& commands) const;
 
         PipeContext createPipeContext(void) const;

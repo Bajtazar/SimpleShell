@@ -18,7 +18,7 @@ namespace shell {
     }
 
     std::any PipeParser::operator() (std::string const& command) {
-        auto subcommands = splitOnPipe(command);
+        auto subcommands = splitOn(command, '|');
         if (subcommands.size() == 1)
             return (*expressionParser)(subcommands.front());
         std::vector<Command> commands;
@@ -57,19 +57,6 @@ namespace shell {
         if (pipe2(fd, O_CLOEXEC)) throw std::runtime_error{"Cannot create a pipe"};
         return {{[desc = fd[1]]() { dup2(desc, STDOUT_FILENO); }, [desc=fd[1]](){ close(desc); }},
                 {[desc = fd[0]]() { dup2(desc, STDIN_FILENO); }, [desc=fd[0]](){ close(desc); }}};
-    }
-
-    std::vector<std::string> PipeParser::splitOnPipe(std::string const& command) const {
-        std::vector<std::string> splitted;
-        auto prev = command.begin();
-        auto iter = std::ranges::find(command, '|');
-        for (; iter != command.end(); iter = std::ranges::find(iter, command.end(), '|')) {
-            splitted.emplace_back(prev, iter);
-            prev = ++iter;
-        }
-        if (prev != command.end())
-            splitted.emplace_back(prev, iter);
-        return splitted;
     }
 
 }
