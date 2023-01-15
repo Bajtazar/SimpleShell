@@ -36,8 +36,10 @@ namespace shell {
         actualizeUser();
         actualizeDirectory();
         const char* userColor = user == "root" ? "\033[91m" : "\033[94m";
-        std::printf("\033[95m[%s%s\033[33m@\033[96m%s\033[95m]\033[49m\033[93m%s\033[97m$ ", userColor, user.c_str(), host.c_str(),
-                    directory.c_str());
+        std::printf(
+            "\033[95m[%s%s\033[33m@\033[96m%s\033[95m]\033[49m\033[93m%s\033["
+            "97m$ ",
+            userColor, user.c_str(), host.c_str(), directory.c_str());
     }
 
     [[nodiscard]] std::string Console::getLineFromStdin(void) {
