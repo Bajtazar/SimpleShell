@@ -11,6 +11,9 @@ namespace shell {
     public:
         using Args = std::vector<std::string>;
         using Invocable = std::function<void(Args const&)>;
+        using Callback = std::function<void(void)>;
+        using CBPack = std::pair<Callback, Callback>;
+        using Callbacks = std::vector<CBPack>;
 
         explicit Command(Invocable invocable);
 
@@ -18,12 +21,15 @@ namespace shell {
 
         void setArgs(Args&& args);
 
+        void setCallbacks(Callbacks const& callbacks);
+
         void operator() (void);
 
         [[nodiscard]] bool isExternalProgram(void) const noexcept;
     private:
         using State = std::variant<Invocable, std::string>;
 
+        Callbacks callbacks;
         Args args;
         State state;
 

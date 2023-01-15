@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SimpleShell/Parser/ParsingEntity.hpp>
+#include <SimpleShell/System/Command.hpp>
 
 namespace shell {
 
@@ -15,9 +16,21 @@ namespace shell {
         std::any operator() (std::string const& command) override;
 
     private:
+        using Args = std::vector<std::string>;
+        using ArgsAndIoctl = std::pair<Args, Args>;
+        using Callbacks = typename Command::Callbacks;
+        using Callback = typename Command::CBPack;
+
         ParsingEntity* commandParser = nullptr;
         ParsingEntity* variableParser = nullptr;
         ParsingEntity* stringParser = nullptr;
+        ParsingEntity* ioctlParser = nullptr;
+
+        Args getArgs(Args const& parsed) const;
+
+        ArgsAndIoctl getIoctlRange(Args&& parsed) const;
+
+        Callbacks generateIoctlCallbacks(Args const& ioctl) const;
     };
 
 }

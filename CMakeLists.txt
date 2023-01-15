@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_executable(${PROJECT_NAME} main.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/IO/Console.cpp
+    ${PROJECT_SOURCE_DIR}/src/SimpleShell/Util/ResourceGuard.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Util/Strings.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Parser.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/VariableParser.cpp
@@ -17,7 +18,6 @@ add_executable(${PROJECT_NAME} main.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/IoctlParser.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/LocalVariables.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/ChildProcess.cpp
-    ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/IoController.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/Command.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/Util.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/BuiltInCommands.cpp

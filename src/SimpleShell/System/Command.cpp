@@ -1,4 +1,5 @@
 #include <SimpleShell/System/Command.hpp>
+#include <SimpleShell/Util/ResourceGuard.hpp>
 
 #include <algorithm>
 
@@ -41,7 +42,12 @@ namespace shell {
         this->args = std::move(args);
     }
 
+    void Command::setCallbacks(Callbacks const& callbacks) {
+        this->callbacks = callbacks;
+    }
+
     void Command::operator()(void) {
+        ResourceGuard guard{std::move(callbacks)};
         if (std::holds_alternative<Invocable>(state))
             std::get<Invocable>(state)(args);
         else {
