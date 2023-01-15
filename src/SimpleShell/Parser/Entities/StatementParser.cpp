@@ -17,7 +17,12 @@ namespace shell {
     }
 
     std::any StatementParser::operator()(std::string const& command) {
-        auto [parsed, ioctl] = getIoctlRange(splitOnQuotes(command, '\''), '\'');
+        std::vector<std::string> splitted;
+        for (auto const& spl : splitOnQuotes(command, '\''))
+            for (auto&& x : split(spl))
+                splitted.push_back(std::move(x));
+
+        auto [parsed, ioctl] = getIoctlRange(std::move(splitted), '\'');
 
         if (parsed.empty())
             return Command{[]([[maybe_unused]] Args const& args) {}};

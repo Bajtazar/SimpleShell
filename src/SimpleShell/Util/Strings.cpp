@@ -55,7 +55,7 @@ namespace shell {
         while (iter != string.end()) {
             auto quoteIter = std::find(iter, string.end(), quote);
             if (quoteIter != iter)
-                std::ranges::move(split({iter, quoteIter}), std::back_inserter(result));
+                result.emplace_back(iter, quoteIter);
             auto quoteEnd = quoteIter;
             if (quoteIter == string.end())
                 return result;
@@ -66,8 +66,8 @@ namespace shell {
             }
             if (quoteEnd == string.end())
                 throw std::runtime_error{"Invalid quoted range"};
-            result.emplace_back(quoteIter, std::next(quoteEnd));
             iter = std::next(quoteEnd);
+            result.emplace_back(quoteIter, iter);
         }
         return result;
     }
@@ -97,9 +97,36 @@ namespace shell {
             if (stack)
                 throw std::runtime_error{"Invalid brackets"};
         }
-        if (prev != iter && prev != string.end())
+        if (prev != iter && prev < string.end())
             ranges.emplace_back(prev, iter);
         return ranges;
+    }
+
+    std::vector<std::string> advancedSplitter(std::string const& string) {
+        std::vector<std::string> buf1;
+        for (auto const& s1 : splitOnQuotes(string, '\''))
+            for (auto const& s2 : splitOnBrackets(s1, '(', ')'))
+                buf1.push_back(s2);
+        std::vector<std::string> results;
+        std::string buffer;
+        for (auto const& str : buf1) {
+            if (str.front() != '\'' && str.front() != '(') {
+                auto split = splitOn(str, ';');
+                if (split.size() > 1) {
+                    buffer += split.front();
+                    results.push_back(std::move(buffer));
+                    buffer = std::string{};
+                    for (size_t i = 1; i < split.size() - 1; ++i)
+                        results.push_back(split[i]);
+                    buffer = split.back();
+                } else
+                    buffer += str;
+            } else
+                buffer += str;
+        }
+        if (not buffer.empty())
+            results.push_back(std::move(buffer));
+        return results;
     }
 
 }

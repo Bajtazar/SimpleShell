@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SimpleShell/Parser/ParsingEntity.hpp>
+#include <SimpleShell/System/Command.hpp>
 
 namespace shell {
 
@@ -13,6 +14,10 @@ namespace shell {
         std::any operator() (std::string const& command) override;
     private:
         ParsingEntity* pipeParser = nullptr;
+
+        std::vector<Command> getCommands(std::string const& command) const;
+
+        void invokeCommand(Command&& command) const;
     };
 
 }

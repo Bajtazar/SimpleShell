@@ -1,4 +1,5 @@
 #include "IoctlHelper.hpp"
+#include <SimpleShell/Util/Strings.hpp>
 
 #include <algorithm>
 
@@ -15,9 +16,9 @@ namespace shell {
         std::vector<std::string> ioctl;
         for (auto&& string : parsed) {
             if (isIoctl(string))
-                ioctl.push_back(std::move(string));
+                ioctl.push_back(trim(string));
             else
-                args.push_back(std::move(string));
+                args.push_back(trim(string));
         }
         return { args, ioctl };
     }
