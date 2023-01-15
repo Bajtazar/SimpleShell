@@ -9,11 +9,16 @@ extern "C" {
 
 namespace shell {
 
-    IoctlParser::IoctlParser(void) :
+    IoctlParser::Descrpitors::Descrpitors(void) :
         stdIn{dup(STDIN_FILENO)},
         stdOut{dup(STDOUT_FILENO)},
-        stdErr{dup(STDERR_FILENO)}
-    {}
+        stdErr{dup(STDERR_FILENO)} {}
+
+    IoctlParser::Descrpitors::~Descrpitors(void) {
+        close(stdIn);
+        close(stdOut);
+        close(stdErr);
+    }
 
     void IoctlParser::registerCallbacks(ParsingEntityMap const& parsinMap) {
         stringParser = parsinMap.at("string").get();
@@ -23,12 +28,6 @@ namespace shell {
         if (isFileRedirection(command))
             return parseRedirection(command);
         throw ParsingException{"Given command is not a valid io redirection"};
-    }
-
-    IoctlParser::~IoctlParser(void) {
-        close(stdIn);
-        close(stdOut);
-        close(stdErr);
     }
 
     bool IoctlParser::isFileRedirection(std::string const& command) const {
@@ -52,15 +51,11 @@ namespace shell {
             return fileAndProc(left, direction);
         if (left.empty())
             return fileAndProc(right, not direction);
-        if (isStreamDesc(left) && isStreamDesc(right))
+        if (Stream::isStream(left) && Stream::isStream(right))
             return streamToStream(left, right, direction);
         throw ParsingException{
             "The > and < tokens can be only used inside an explicit string "
             "or in io redirection context"};
-    }
-
-    bool IoctlParser::isStreamDesc(std::string const& string) const {
-        return string.size() == 1 && std::isdigit(string.front());
     }
 
     IoctlParser::Result IoctlParser::fileAndProc(std::string const& fileName, bool direction) const {
@@ -76,14 +71,14 @@ namespace shell {
                 }
                 dup2(*link, direction == OUT ? STDOUT_FILENO : STDIN_FILENO);
             },
-            [link, stdIn=this->stdIn, stdOut=this->stdOut, direction]() {
+            [link, desc=descriptors, direction]() {
                 if (*link == ERROR)
                     return;
                 std::fflush(direction == OUT ? stdout : stdin);
                 if (direction == OUT)
-                    dup2(stdOut, STDOUT_FILENO);
+                    dup2(desc.stdOut, STDOUT_FILENO);
                 else
-                    dup2(stdIn, STDIN_FILENO);
+                    dup2(desc.stdIn, STDIN_FILENO);
                 close(*link);
             }
         };
@@ -93,74 +88,59 @@ namespace shell {
                                                     std::string const& right,
                                                     bool direction) const
     {
-        auto leftDesc = std::stoi(left);
-        auto rightDesc = std::stoi(right);
-        if (leftDesc < 0 || rightDesc < 0 || leftDesc > 2 || rightDesc > 2)
-            throw ParsingException{"The stream descriptor has to be in the range from 0 to 2"};
+        Stream leftDesc{left};
+        Stream rightDesc{right};
         if (direction == OUT)
             std::swap(leftDesc, rightDesc);
         return {
-            [leftDesc, rightDesc, stdIn=this->stdIn, stdOut=this->stdOut, stdErr=this->stdErr]() {
-                 switch (leftDesc) {
-                    case STDIN_FILENO:
-                        dup2(stdIn, rightDesc);
-                        break;
-                    case STDOUT_FILENO:
-                        dup2(stdOut, rightDesc);
-                        break;
-                    case STDERR_FILENO:
-                        dup2(stdErr, rightDesc);
-                        break;
-                    default:
-                        break;
-                }
+            [leftDesc, rightDesc, desc=descriptors]() {
+                dup2(leftDesc.get(desc), rightDesc.set(desc));
             },
-            [rightDesc, stdIn=this->stdIn, stdOut=this->stdOut, stdErr=this->stdErr] {
-                switch (rightDesc) {
-                    case STDIN_FILENO:
-                        dup2(stdIn, STDIN_FILENO);
-                        break;
-                    case STDOUT_FILENO:
-                        dup2(stdOut, STDOUT_FILENO);
-                        break;
-                    case STDERR_FILENO:
-                        dup2(stdErr, STDERR_FILENO);
-                        break;
-                    default:
-                        break;
-                }
+            [rightDesc, desc=descriptors] {
+                dup2(rightDesc.get(desc), rightDesc.set(desc));
             }
         };
     }
 
-    // DeferredIoctl IoctlParser::getCtl(std::string const& left, std::string const& right) const {
-    //     if (right.empty())
-    //         return fileToProc(left);
-    //     if (left.empty())
-    //         return procToFile(right);
-    //     if (left.empty() && right.empty())
-    //         throw ParsingException{
-    //             "The > and < tokens can be only used inside an explicit string "
-    //             "or in io redirection context"};
-    //     return streamToStream(std::stoi(left), std::stoi(right));
-    // }
+    IoctlParser::Stream::Stream(std::string const& stream) :
+        isReference{stream.front() == '&'}
+    {
+        descriptor = std::stoi(
+            isReference ? std::string{std::next(stream.begin()), stream.end()}
+                        : stream);
+        if (descriptor < 0 || descriptor > 2)
+            throw ParsingException{"The stream descriptor has to be in the range from 0 to 2"};
+    }
 
-    // DeferredIoctl IoctlParser::fileToProc(std::string const& fileName) const {
-    //     auto file = open(fileName.c_str(), O_RDONLY);
-    //     if (file == -1)
-    //         throw std::runtime_error{"\"" + fileName + "\" File could not be open"};
-    //     return DeferredIoctl{{{0, file}}, [file]() { close(file); }};
-    // }
+    [[nodiscard]] IoctlParser::descriptor_t IoctlParser::Stream::get(
+        Descrpitors const& desc) const noexcept
+    {
+        if (isReference)
+            return descriptor;
+        switch (descriptor) {
+            case STDIN_FILENO:
+                return desc.stdIn;
+            case STDOUT_FILENO:
+                return desc.stdOut;
+            case STDERR_FILENO:
+                return desc.stdErr;
+            default:
+                break;
+        }
+        return 0;
+    }
 
-    // DeferredIoctl IoctlParser::procToFile(std::string const& fileName) const {
-    //     auto file = open(fileName.c_str(), O_WRONLY);
-    //     if (file == -1)
-    //         throw std::runtime_error{"\"" + fileName + "\" File could not be open"};
-    //     return DeferredIoctl{{{1, file}}, [file]() { close(file); }};
-    // }
+    [[nodiscard]] IoctlParser::descriptor_t IoctlParser::Stream::set(
+        Descrpitors const& desc) const noexcept
+    {
+        return descriptor;
+    }
 
-    // DeferredIoctl IoctlParser::streamToStream(descriptor_t left, descriptor_t right) const {
-    //     return DeferredIoctl{{{left, right}}};
-    // }
+
+    [[nodiscard]] bool IoctlParser::Stream::isStream(std::string const& stream) noexcept {
+        if (stream.front() == '&')
+            return stream.size() == 2 && std::isdigit(stream.back());
+        return stream.size() == 1 && std::isdigit(stream.front());
+    }
 
 }
