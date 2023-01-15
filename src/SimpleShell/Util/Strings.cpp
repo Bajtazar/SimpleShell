@@ -59,4 +59,34 @@ namespace shell {
         return result;
     }
 
+    std::vector<std::string> splitOnBrackets(std::string string, char open, char close) {
+        string = trim(string);
+        std::vector<std::string> ranges;
+        auto iter = string.begin();
+        auto prev = iter;
+        for (;iter < string.end(); ++iter) {
+            if (*iter != open)
+                continue;
+            if (iter != prev)
+                ranges.emplace_back(prev, iter);
+            prev = iter;
+            size_t stack = 1;
+            for (++iter; stack && iter < string.end(); ++iter) {
+                if (*iter == open)
+                    ++stack;
+                else if (*iter == close) {
+                    if (not --stack) {
+                        ranges.emplace_back(prev, ++iter);
+                        prev = iter;
+                    }
+                }
+            }
+            if (stack)
+                throw std::runtime_error{"Invalid brackets"};
+        }
+        if (prev != iter && prev != string.end())
+            ranges.emplace_back(prev, iter);
+        return ranges;
+    }
+
 }

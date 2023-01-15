@@ -9,6 +9,9 @@ add_executable(${PROJECT_NAME} main.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/IO/Console.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Util/Strings.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Parser.cpp
+    ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/IoctlHelper.hpp
+    ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/ExpressionParser.cpp
+    ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/IoctlHelper.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/VariableParser.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/ProgramParser.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/Parser/Entities/StatementParser.cpp

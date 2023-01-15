@@ -54,6 +54,10 @@ namespace shell {
         }
     }
 
+    void Command::setExternalExecution(void) {
+        forcedExternal = true;
+    }
+
     Command::CallbackGuard::CallbackGuard(Callbacks&& invocables) {
         for (auto&& [opener, closer] : invocables) {
             opener();
@@ -61,13 +65,13 @@ namespace shell {
         }
     }
 
-   Command:: CallbackGuard::~CallbackGuard(void) {
+    Command::CallbackGuard::~CallbackGuard(void) {
         for (auto& closer : this->invocables)
             closer();
     }
 
     [[nodiscard]] bool Command::isExternalProgram(void) const noexcept {
-        return std::holds_alternative<std::string>(state);
+        return std::holds_alternative<std::string>(state) || forcedExternal;
     }
 
 }

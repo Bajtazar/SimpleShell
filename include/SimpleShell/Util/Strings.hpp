@@ -15,4 +15,6 @@ namespace shell {
 
     std::vector<std::string> splitOnQuotes(std::string string, char quote);
 
+    std::vector<std::string> splitOnBrackets(std::string string, char open, char close);
+
 }

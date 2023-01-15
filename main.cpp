@@ -5,6 +5,7 @@
 #include <SimpleShell/Parser/Entities/StringParser.hpp>
 #include <SimpleShell/Parser/Entities/VariableParser.hpp>
 #include <SimpleShell/Parser/Entities/IoctlParser.hpp>
+#include <SimpleShell/Parser/Entities/ExpressionParser.hpp>
 #include <SimpleShell/Parser/Parser.hpp>
 
 template <std::derived_from<shell::ParsingEntity> Tp>
@@ -18,6 +19,7 @@ static void setParsers(void) {
     registerEntity<shell::CommandParser>("command");
     registerEntity<shell::StatementParser>("statement");
     registerEntity<shell::IoctlParser>("ioctl");
+    registerEntity<shell::ExpressionParser>("expression");
 
     registerEntity<shell::ProgramParser>("program");
 }

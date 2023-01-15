@@ -17,7 +17,7 @@ namespace shell {
     }
 
     std::any StatementParser::operator()(std::string const& command) {
-        auto [parsed, ioctl] = getIoctlRange(splitOnQuotes(command, '\''));
+        auto [parsed, ioctl] = getIoctlRange(splitOnQuotes(command, '\''), '\'');
 
         if (parsed.empty())
             return Command{[]([[maybe_unused]] Args const& args) {}};

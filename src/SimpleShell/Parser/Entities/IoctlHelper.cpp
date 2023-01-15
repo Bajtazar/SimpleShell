@@ -4,9 +4,9 @@
 
 namespace shell {
 
-    ArgsAndIoctl getIoctlRange(std::vector<std::string>&& parsed) {
-        static constexpr auto isIoctl = [](std::string const& str) -> bool {
-            if (str.front() == '\'')
+    ArgsAndIoctl getIoctlRange(std::vector<std::string>&& parsed, char escape) {
+        auto isIoctl = [escape](std::string const& str) -> bool {
+            if (str.front() == escape)
                 return false;
             return std::ranges::count(str, '<') || std::ranges::count(str, '>');
         };

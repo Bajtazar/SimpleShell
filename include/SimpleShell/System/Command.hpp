@@ -25,6 +25,8 @@ namespace shell {
 
         void operator() (void);
 
+        void setExternalExecution(void);
+
         [[nodiscard]] bool isExternalProgram(void) const noexcept;
     private:
         using State = std::variant<Invocable, std::string>;
@@ -45,6 +47,7 @@ namespace shell {
         Callbacks callbacks;
         Args args;
         State state;
+        bool forcedExternal = false;
 
         char** prepareArgTable(void);
 
