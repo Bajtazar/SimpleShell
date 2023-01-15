@@ -59,6 +59,8 @@ namespace shell {
         Result streamToStream(std::string const& left, std::string const& right,
                              bool direction) const;
 
+        Result streamToFile(std::string const& file, std::string const& stream, bool direction) const;
+
         static constexpr bool OUT = true;
         static constexpr bool IN = false;
     };

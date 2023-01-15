@@ -7,6 +7,8 @@ extern "C" {
     #include <fcntl.h>
 }
 
+#include <iostream>
+
 namespace shell {
 
     IoctlParser::Descrpitors::Descrpitors(void) :
@@ -43,19 +45,46 @@ namespace shell {
         std::string left{command.begin(), iter};
         std::string right{std::next(iter), command.end()};
         // if only for better readibility
-        return getCtl(right, left, *iter == '>' ? OUT : IN);
+        return getCtl(left, right, *iter == '>' ? OUT : IN);
     }
 
     IoctlParser::Result IoctlParser::getCtl(std::string const& left, std::string const& right, bool direction) const {
         if (right.empty())
-            return fileAndProc(left, direction);
+            return fileAndProc(left, not direction);
         if (left.empty())
-            return fileAndProc(right, not direction);
+            return fileAndProc(right, direction);
         if (Stream::isStream(left) && Stream::isStream(right))
             return streamToStream(left, right, direction);
+        if (Stream::isStream(left))
+            return streamToFile(right, left, direction);
+        if (Stream::isStream(right))
+            return streamToFile(left, right, not direction);
         throw ParsingException{
             "The > and < tokens can be only used inside an explicit string "
             "or in io redirection context"};
+    }
+
+    IoctlParser::Result IoctlParser::streamToFile(std::string const& file, std::string const& stream, bool direction) const {
+        static constexpr descriptor_t ERROR = 0xFFFFFFFF;
+        auto link = std::make_shared<descriptor_t>(0);
+        Stream streamDesc{stream};
+        return {
+            [link, file, stream=streamDesc, this, direction]() {
+                *link = open(file.c_str(), direction == OUT ? O_WRONLY | O_CREAT | O_TRUNC : O_RDONLY, 0600);
+                if (*link == -1) {
+                    *link = ERROR;
+                    return;
+                }
+                dup2(*link, stream.set(descriptors));
+            },
+            [link, stream=streamDesc, this]() {
+                if (*link == ERROR)
+                    return;
+                fsync(stream.set(descriptors));
+                dup2(stream.get(descriptors), stream.set(descriptors));
+                close(*link);
+            }
+        };
     }
 
     IoctlParser::Result IoctlParser::fileAndProc(std::string const& fileName, bool direction) const {
@@ -71,14 +100,14 @@ namespace shell {
                 }
                 dup2(*link, direction == OUT ? STDOUT_FILENO : STDIN_FILENO);
             },
-            [link, desc=descriptors, direction]() {
+            [link, this, direction]() {
                 if (*link == ERROR)
                     return;
                 std::fflush(direction == OUT ? stdout : stdin);
                 if (direction == OUT)
-                    dup2(desc.stdOut, STDOUT_FILENO);
+                    dup2(descriptors.stdOut, STDOUT_FILENO);
                 else
-                    dup2(desc.stdIn, STDIN_FILENO);
+                    dup2(descriptors.stdIn, STDIN_FILENO);
                 close(*link);
             }
         };
@@ -93,11 +122,11 @@ namespace shell {
         if (direction == OUT)
             std::swap(leftDesc, rightDesc);
         return {
-            [leftDesc, rightDesc, desc=descriptors]() {
-                dup2(leftDesc.get(desc), rightDesc.set(desc));
+            [leftDesc, rightDesc, this]() {
+                dup2(leftDesc.get(descriptors), rightDesc.set(descriptors));
             },
-            [rightDesc, desc=descriptors] {
-                dup2(rightDesc.get(desc), rightDesc.set(desc));
+            [rightDesc, this] {
+                dup2(rightDesc.get(descriptors), rightDesc.set(descriptors));
             }
         };
     }
