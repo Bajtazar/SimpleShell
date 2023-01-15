@@ -13,12 +13,18 @@ extern "C" {
 namespace shell {
 
     Console::Console(void) :
-        user{}, directory{}
+        user{}, directory{}, host{getHostname()}
     {
         actualizeUser();
         actualizeDirectory();
         if (user.empty() || directory.empty())
             throw std::runtime_error{"Unknown error during console init"};
+    }
+
+    std::string Console::getHostname(void) {
+        char hostname[1024];
+        gethostname(hostname, 1024);
+        return { hostname, std::strlen(hostname) };
     }
 
     [[nodiscard]] std::string Console::getCommand(void) {
@@ -29,7 +35,8 @@ namespace shell {
     void Console::printPrompt(void) {
         actualizeUser();
         actualizeDirectory();
-        std::cout << '[' << user << ']' << directory << "$ ";
+        std::printf("[%s@%s]%s$ ", user.c_str(), host.c_str(),
+                    directory.c_str());
     }
 
     [[nodiscard]] std::string Console::getLineFromStdin(void) {

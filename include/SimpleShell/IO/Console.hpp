@@ -27,6 +27,9 @@ namespace shell {
 
         std::string user;
         std::string directory;
+        std::string const host;
+
+        static std::string getHostname(void);
     };
 
 }
