@@ -9,8 +9,6 @@ extern "C" {
     #include <fcntl.h>
 }
 
-#include <iostream>
-
 namespace shell {
 
     void PipeParser::registerCallbacks(ParsingEntityMap const& parsinMap) {
@@ -18,7 +16,7 @@ namespace shell {
     }
 
     std::any PipeParser::operator() (std::string const& command) {
-        auto subcommands = splitOn(command, '|');
+        auto subcommands = advancedSplitter(command, '|');
         if (subcommands.size() == 1)
             return (*expressionParser)(subcommands.front());
         std::vector<Command> commands;

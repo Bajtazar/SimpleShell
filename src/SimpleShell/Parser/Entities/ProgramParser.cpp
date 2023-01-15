@@ -24,7 +24,7 @@ namespace shell {
 
     std::vector<Command> ProgramParser::getCommands(std::string const& command) const {
         std::vector<Command> commands;
-        for (auto const& sequence : advancedSplitter(command))
+        for (auto const& sequence : advancedSplitter(command, ';'))
             commands.push_back(std::any_cast<Command>((*pipeParser)(sequence)));
         return commands;
     }

@@ -4,8 +4,6 @@
 #include <algorithm>
 #include <regex>
 
-#include <iostream>
-
 namespace shell {
 
 

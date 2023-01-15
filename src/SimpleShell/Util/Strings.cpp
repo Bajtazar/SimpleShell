@@ -102,16 +102,16 @@ namespace shell {
         return ranges;
     }
 
-    std::vector<std::string> advancedSplitter(std::string const& string) {
+    std::vector<std::string> advancedSplitter(std::string const& string, char splitter) {
         std::vector<std::string> buf1;
-        for (auto const& s1 : splitOnQuotes(string, '\''))
-            for (auto const& s2 : splitOnBrackets(s1, '(', ')'))
+        for (auto const& s1 : splitOnBrackets(string, '(', ')'))
+            for (auto const& s2 : splitOnQuotes(s1, '\''))
                 buf1.push_back(s2);
         std::vector<std::string> results;
         std::string buffer;
         for (auto const& str : buf1) {
             if (str.front() != '\'' && str.front() != '(') {
-                auto split = splitOn(str, ';');
+                auto split = splitOn(str, splitter);
                 if (split.size() > 1) {
                     buffer += split.front();
                     results.push_back(std::move(buffer));

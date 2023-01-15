@@ -19,6 +19,6 @@ namespace shell {
 
     std::vector<std::string> splitOnBrackets(std::string string, char open, char close);
 
-    std::vector<std::string> advancedSplitter(std::string const& string);
+    std::vector<std::string> advancedSplitter(std::string const& string, char splitter);
 
 }
