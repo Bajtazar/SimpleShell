@@ -29,6 +29,8 @@ namespace shell {
 
         void setExternalExecution(void);
 
+        void closePipeDesc(void);
+
         [[nodiscard]] bool isExternalProgram(void) const noexcept;
     private:
         using State = std::variant<Invocable, std::string>;

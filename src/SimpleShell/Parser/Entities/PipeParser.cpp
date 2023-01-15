@@ -29,6 +29,9 @@ namespace shell {
             std::vector<ChildProcess> processess;
             for (auto& invocable : cmds)
                 processess.emplace_back(invocable);
+            for (size_t i = 0;i < cmds.size(); ++i)
+                if (processess[i].waitFor())
+                    cmds[i].closePipeDesc();
         }};
     }
 
@@ -51,9 +54,9 @@ namespace shell {
         static constexpr auto NOFUC = []() {};
 
         int fd[2]{};
-        if (pipe(fd)) throw std::runtime_error{"Cannot create a pipe"};
-        return {{[desc = fd[1]]() { dup2(desc, STDOUT_FILENO); }, NOFUC},
-                {[desc = fd[0]]() { dup2(desc, STDIN_FILENO); }, NOFUC}};
+        if (pipe2(fd, O_CLOEXEC)) throw std::runtime_error{"Cannot create a pipe"};
+        return {{[desc = fd[1]]() { dup2(desc, STDOUT_FILENO); }, [desc=fd[1]](){ close(desc); }},
+                {[desc = fd[0]]() { dup2(desc, STDIN_FILENO); }, [desc=fd[0]](){ close(desc); }}};
     }
 
     std::vector<std::string> PipeParser::splitOnPipe(std::string const& command) const {

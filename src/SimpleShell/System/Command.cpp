@@ -75,6 +75,11 @@ namespace shell {
             closer();
     }
 
+    void Command::closePipeDesc(void) {
+        for (auto const& [opener, closer] : pipeline)
+            closer();
+    }
+
     [[nodiscard]] bool Command::isExternalProgram(void) const noexcept {
         return std::holds_alternative<std::string>(state) || forcedExternal;
     }
