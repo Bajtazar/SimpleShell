@@ -51,6 +51,13 @@ namespace shell {
                 if (not args.empty())
                     throw std::runtime_error{"Exit does not take any argument"};
                 exit(0);
+            }},
+            {"pwd", [](Args const& args) {
+                if (not args.empty())
+                    throw std::runtime_error{"Pwd does not take any argument"};
+                char buffer[1024];
+                if (buffer == getcwd(buffer, 1024))
+                    std::printf("%s\n", buffer);
             }}
     }};
 
