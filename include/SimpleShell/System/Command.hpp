@@ -29,6 +29,19 @@ namespace shell {
     private:
         using State = std::variant<Invocable, std::string>;
 
+        class CallbackGuard {
+        public:
+            explicit CallbackGuard(Callbacks&& invocables);
+
+            CallbackGuard(CallbackGuard const&) = delete;
+
+            CallbackGuard& operator=(CallbackGuard const&) = delete;
+
+            ~CallbackGuard(void);
+        private:
+            std::vector<Callback> invocables;
+        };
+
         Callbacks callbacks;
         Args args;
         State state;

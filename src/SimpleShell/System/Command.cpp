@@ -1,5 +1,4 @@
 #include <SimpleShell/System/Command.hpp>
-#include <SimpleShell/Util/ResourceGuard.hpp>
 
 #include <algorithm>
 
@@ -47,12 +46,24 @@ namespace shell {
     }
 
     void Command::operator()(void) {
-        ResourceGuard guard{std::move(callbacks)};
+        CallbackGuard guard{std::move(callbacks)};
         if (std::holds_alternative<Invocable>(state))
             std::get<Invocable>(state)(args);
         else {
             execvp(std::get<std::string>(state).c_str(), prepareArgTable());
         }
+    }
+
+    Command::CallbackGuard::CallbackGuard(Callbacks&& invocables) {
+        for (auto&& [opener, closer] : invocables) {
+            opener();
+            this->invocables.push_back(std::move(closer));
+        }
+    }
+
+   Command:: CallbackGuard::~CallbackGuard(void) {
+        for (auto& closer : this->invocables)
+            closer();
     }
 
     [[nodiscard]] bool Command::isExternalProgram(void) const noexcept {
