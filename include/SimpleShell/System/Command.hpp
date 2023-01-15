@@ -23,6 +23,8 @@ namespace shell {
 
         void setCallbacks(Callbacks const& callbacks);
 
+        void setPipeCallbacks(Callbacks const& callbacks);
+
         void operator() (void);
 
         void setExternalExecution(void);
@@ -45,6 +47,7 @@ namespace shell {
         };
 
         Callbacks callbacks;
+        Callbacks pipeline;
         Args args;
         State state;
         bool forcedExternal = false;

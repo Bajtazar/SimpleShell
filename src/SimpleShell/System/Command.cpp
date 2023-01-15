@@ -45,7 +45,12 @@ namespace shell {
         this->callbacks = callbacks;
     }
 
+    void Command::setPipeCallbacks(Callbacks const& callbacks) {
+        this->pipeline = callbacks;
+    }
+
     void Command::operator()(void) {
+        CallbackGuard pipeguard{std::move(pipeline)};
         CallbackGuard guard{std::move(callbacks)};
         if (std::holds_alternative<Invocable>(state))
             std::get<Invocable>(state)(args);
