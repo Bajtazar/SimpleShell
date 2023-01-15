@@ -37,11 +37,16 @@ namespace shell {
 
         Result fileAndProc(std::string const& fileName, bool direction) const;
 
+        Result streamToStream(std::string const& left, std::string const& right,
+                             bool direction) const;
+
         // DeferredIoctl fileToProc(std::string const& fileName) const;
 
         // DeferredIoctl procToFile(std::string const& fileName) const;
 
         // DeferredIoctl streamToStream(descriptor_t left, descriptor_t right) const;
+
+        bool isStreamDesc(std::string const& string) const;
 
         static constexpr bool OUT = true;
         static constexpr bool IN = false;
