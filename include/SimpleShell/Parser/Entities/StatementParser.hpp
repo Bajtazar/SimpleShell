@@ -17,9 +17,6 @@ namespace shell {
 
     private:
         using Args = std::vector<std::string>;
-        using ArgsAndIoctl = std::pair<Args, Args>;
-        using Callbacks = typename Command::Callbacks;
-        using Callback = typename Command::CBPack;
 
         ParsingEntity* commandParser = nullptr;
         ParsingEntity* variableParser = nullptr;
@@ -27,10 +24,6 @@ namespace shell {
         ParsingEntity* ioctlParser = nullptr;
 
         Args getArgs(Args const& parsed) const;
-
-        ArgsAndIoctl getIoctlRange(Args&& parsed) const;
-
-        Callbacks generateIoctlCallbacks(Args const& ioctl) const;
     };
 
 }
