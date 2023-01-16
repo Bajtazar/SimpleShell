@@ -51,7 +51,7 @@ namespace shell {
     }
 
     void Command::operator()(void) {
-        {
+        try {
             CallbackGuard pipeguard{pipeline};
             CallbackGuard guard{callbacks};
             if (std::holds_alternative<Invocable>(state))
@@ -59,6 +59,9 @@ namespace shell {
             else {
                 execvp(std::get<std::string>(state).c_str(), prepareArgTable());
             }
+        } catch(std::exception const& exception) {
+            if (not isExternalProgram())
+                std::rethrow_exception(std::current_exception());
         }
         if (isExternalProgram())
             exit(0);
