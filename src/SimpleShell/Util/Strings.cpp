@@ -1,3 +1,4 @@
+#include <SimpleShell/Parser/ParsingException.hpp>
 #include <SimpleShell/Util/Strings.hpp>
 
 #include <algorithm>
@@ -69,7 +70,7 @@ namespace shell {
                     break;
             }
             if (quoteEnd == string.end())
-                throw std::runtime_error{"Invalid quoted range"};
+                throw ParsingException{"Invalid quoted range"};
             iter = std::next(quoteEnd);
             result.emplace_back(quoteIter, iter);
         }
@@ -99,7 +100,7 @@ namespace shell {
                 }
             }
             if (stack)
-                throw std::runtime_error{"Invalid brackets"};
+                throw ParsingException{"Invalid brackets"};
         }
         if (prev != iter && prev < string.end())
             ranges.emplace_back(prev, iter);
