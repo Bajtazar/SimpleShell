@@ -63,21 +63,16 @@ namespace shell {
     }
 
     IoctlParser::Result IoctlParser::streamToFile(std::string const& file, std::string const& stream, bool direction) const {
-        static constexpr descriptor_t ERROR = 0xFFFFFFFF;
         auto link = std::make_shared<descriptor_t>(0);
         Stream streamDesc{stream};
         return {
             [link, file, stream=streamDesc, this, direction]() {
                 *link = open(file.c_str(), direction == OUT ? O_WRONLY | O_CREAT | O_TRUNC : O_RDONLY, 0600);
-                if (*link == -1) {
-                    *link = ERROR;
-                    return;
-                }
+                if (*link == -1)
+                    throw std::runtime_error{"\"" + file + "\" cannot be open"};
                 dup2(*link, stream.set(descriptors));
             },
             [link, stream=streamDesc, this]() {
-                if (*link == ERROR)
-                    return;
                 fsync(stream.set(descriptors));
                 dup2(stream.get(descriptors), stream.set(descriptors));
                 close(*link);
@@ -86,21 +81,15 @@ namespace shell {
     }
 
     IoctlParser::Result IoctlParser::fileAndProc(std::string const& fileName, bool direction) const {
-        static constexpr descriptor_t ERROR = 0xFFFFFFFF;
-
         auto link = std::make_shared<descriptor_t>(0);
         return {
             [link, fileName, direction]() {
                 *link = open(fileName.c_str(), direction == OUT ? O_WRONLY | O_CREAT | O_TRUNC : O_RDONLY, 0600);
-                if (*link == -1) {
-                    *link = ERROR;
-                    return;
-                }
+                if (*link == -1)
+                    throw std::runtime_error{"\"" + fileName + "\" cannot be open"};
                 dup2(*link, direction == OUT ? STDOUT_FILENO : STDIN_FILENO);
             },
             [link, this, direction]() {
-                if (*link == ERROR)
-                    return;
                 std::fflush(direction == OUT ? stdout : stdin);
                 if (direction == OUT)
                     dup2(descriptors.stdOut, STDOUT_FILENO);
