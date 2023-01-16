@@ -11,7 +11,11 @@ namespace shell {
         if (childID > 0)
             return;
         if (not childID) {
-            invocable();
+            try {
+                invocable();
+            } catch (std::exception const& except) {
+                std::puts(except.what());
+            }
             exit(0);
         }
         throw std::runtime_error{"A new child process cannot be forked"};
