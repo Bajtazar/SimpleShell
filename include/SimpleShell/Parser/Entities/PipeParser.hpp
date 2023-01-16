@@ -21,6 +21,9 @@ namespace shell {
         void createPipes(std::vector<Command>& commands) const;
 
         PipeContext createPipeContext(void) const;
+
+        std::vector<Command> getCommands(
+            std::vector<std::string> const& rawCommands) const;
     };
 
 }

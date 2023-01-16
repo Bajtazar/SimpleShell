@@ -16,14 +16,10 @@ namespace shell {
     }
 
     std::any PipeParser::operator() (std::string const& command) {
-        auto subcommands = advancedSplitter(command, '|');
-        if (subcommands.size() == 1)
-            return (*expressionParser)(subcommands.front());
-        std::vector<Command> commands;
-        for (auto const& subcommand : subcommands)
-            commands.push_back(std::any_cast<Command>((*expressionParser)(subcommand)));
-        createPipes(commands);
-        return Command{ [cmds=std::move(commands)]([[maybe_unused]] Command::Args const& args) mutable {
+        auto commands = advancedSplitter(command, '|');
+        if (commands.size() == 1)
+            return (*expressionParser)(commands.front());
+        return Command{ [cmds=getCommands(commands)]([[maybe_unused]] Command::Args const& args) mutable {
             std::vector<ChildProcess> processess;
             for (auto& invocable : cmds)
                 processess.emplace_back(invocable);
@@ -31,6 +27,17 @@ namespace shell {
                 if (processess[i].waitFor())
                     cmds[i].closePipeDesc();
         }};
+    }
+
+    std::vector<Command> PipeParser::getCommands(std::vector<std::string> const& rawCommands) const {
+        std::vector<Command> commands;
+        for (auto const& subcommand : rawCommands) {
+            if (subcommand.empty())
+                throw ParsingException{"An empty space found in the pipe expression"};
+            commands.push_back(std::any_cast<Command>((*expressionParser)(subcommand)));
+        }
+        createPipes(commands);
+        return commands;
     }
 
     void PipeParser::createPipes(std::vector<Command>& commands) const {
