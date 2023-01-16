@@ -9,6 +9,13 @@
 
 namespace shell {
 
+    static constexpr auto splitNotQuoted = [](std::string const& string) -> std::vector<std::string> {
+        auto local = trim(string);
+        if (local.front() == '\'')
+            return { local };
+        return split(local);
+    };
+
     void StatementParser::registerCallbacks(ParsingEntityMap const& parsinMap) {
         commandParser = parsinMap.at("command").get();
         variableParser = parsinMap.at("variable").get();
@@ -18,9 +25,9 @@ namespace shell {
 
     std::any StatementParser::operator()(std::string const& command) {
         std::vector<std::string> splitted;
-        for (auto const& spl : splitOnQuotes(command, '\''))
-            for (auto&& x : split(spl))
-                splitted.push_back(std::move(x));
+        for (auto&& spl : splitOnQuotes(command, '\''))
+            for (auto&& str : splitNotQuoted(spl))
+                splitted.push_back(str);
 
         auto [parsed, ioctl] = getIoctlRange(std::move(splitted), '\'');
 
