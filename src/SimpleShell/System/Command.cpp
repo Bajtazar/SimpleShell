@@ -1,6 +1,7 @@
 #include <SimpleShell/System/Command.hpp>
 
 #include <algorithm>
+#include <ranges>
 
 extern "C" {
     #include <unistd.h>
@@ -75,12 +76,12 @@ namespace shell {
     }
 
     Command::CallbackGuard::~CallbackGuard(void) {
-        for (auto const& [opener, closer] : invocables)
+        for (auto const& [opener, closer] : invocables | std::views::reverse)
             closer();
     }
 
     void Command::closePipeDesc(void) {
-        for (auto const& [opener, closer] : pipeline)
+        for (auto const& [opener, closer] : pipeline | std::views::reverse)
             closer();
     }
 
