@@ -23,6 +23,10 @@ namespace shell {
         return ltrim(rtrim(string));
     }
 
+    std::string removeComments(std::string const& string, char comment) {
+        return { string.begin(), std::ranges::find(string, comment) };
+    }
+
     std::vector<std::string> split(std::string string) {
         std::vector<std::string> splitted;
         string = ltrim(string);

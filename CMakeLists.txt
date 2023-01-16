@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME} main.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/Command.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/Util.cpp
     ${PROJECT_SOURCE_DIR}/src/SimpleShell/System/BuiltInCommands.cpp
+    ${PROJECT_SOURCE_DIR}/src/SimpleShell/Shell/Shell.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

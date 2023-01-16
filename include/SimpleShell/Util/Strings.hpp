@@ -11,6 +11,8 @@ namespace shell {
 
     std::string trim(std::string const& string);
 
+    std::string removeComments(std::string const& string, char comment);
+
     std::vector<std::string> split(std::string string);
 
     std::vector<std::string> splitOn(std::string string, char term);

@@ -1,4 +1,3 @@
-#include <SimpleShell/IO/Console.hpp>
 #include <SimpleShell/Parser/Entities/CommandParser.hpp>
 #include <SimpleShell/Parser/Entities/ProgramParser.hpp>
 #include <SimpleShell/Parser/Entities/StatementParser.hpp>
@@ -7,36 +6,32 @@
 #include <SimpleShell/Parser/Entities/IoctlParser.hpp>
 #include <SimpleShell/Parser/Entities/ExpressionParser.hpp>
 #include <SimpleShell/Parser/Entities/PipeParser.hpp>
+#include <SimpleShell/Shell/Shell.hpp>
 #include <SimpleShell/Parser/Parser.hpp>
 
-template <std::derived_from<shell::ParsingEntity> Tp>
-static void registerEntity(std::string const& name) {
-    shell::Parser::registerEntity(name, std::make_unique<Tp>());
-}
-
 static void setParsers(void) {
-    registerEntity<shell::StringParser>("string");
-    registerEntity<shell::VariableParser>("variable");
-    registerEntity<shell::CommandParser>("command");
-    registerEntity<shell::StatementParser>("statement");
-    registerEntity<shell::IoctlParser>("ioctl");
-    registerEntity<shell::ExpressionParser>("expression");
-    registerEntity<shell::PipeParser>("pipe");
-    registerEntity<shell::ProgramParser>("program");
+    shell::registerEntity<shell::StringParser>("string");
+    shell::registerEntity<shell::VariableParser>("variable");
+    shell::registerEntity<shell::CommandParser>("command");
+    shell::registerEntity<shell::StatementParser>("statement");
+    shell::registerEntity<shell::IoctlParser>("ioctl");
+    shell::registerEntity<shell::ExpressionParser>("expression");
+    shell::registerEntity<shell::PipeParser>("pipe");
+    shell::registerEntity<shell::ProgramParser>("program");
 }
 
-int main(void) {
+int main(int argc, char** argv) {
     setParsers();
-    shell::Console console;
-    shell::Parser parser;
-
-    for (;;) {
-        try {
-            parser(console.getCommand());
-        } catch(std::exception const& exception) {
-            std::puts(exception.what());
-        }
+    switch (shell::parseShellArgs(argc, argv)) {
+        case shell::ShellMode::Interactive:
+            shell::startInteractiveShellSession();
+            break;
+        case shell::ShellMode::Script:
+            shell::parseScript(argv[1]);
+            break;
+        case shell::ShellMode::Unknown:
+            std::printf("Unknown shell parameters");
+            return -1;
     }
-
     return 0;
 }

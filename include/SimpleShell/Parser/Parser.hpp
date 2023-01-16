@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SimpleShell/Parser/ParsingEntity.hpp>
+#include <concepts>
 
 namespace shell {
 
@@ -22,4 +23,9 @@ namespace shell {
         static ParsingEntityMap parsingMap;
     };
 
+    template <std::derived_from<ParsingEntity> Tp>
+    void registerEntity(std::string const& name);
+
 }
+
+#include <SimpleShell/Parser/Parser.tpp>

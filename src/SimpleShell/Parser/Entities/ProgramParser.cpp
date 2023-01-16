@@ -10,7 +10,7 @@ namespace shell {
     }
 
     std::any ProgramParser::operator() (std::string const& command) {
-        for (auto&& invocable : getCommands(trim(command)))
+        for (auto&& invocable : getCommands(removeComments(trim(command), '#')))
             invokeCommand(std::move(invocable));
         return 0;
     }
