@@ -50,13 +50,17 @@ namespace shell {
     }
 
     void Command::operator()(void) {
-        CallbackGuard pipeguard{pipeline};
-        CallbackGuard guard{callbacks};
-        if (std::holds_alternative<Invocable>(state))
-            std::get<Invocable>(state)(args);
-        else {
-            execvp(std::get<std::string>(state).c_str(), prepareArgTable());
+        {
+            CallbackGuard pipeguard{pipeline};
+            CallbackGuard guard{callbacks};
+            if (std::holds_alternative<Invocable>(state))
+                std::get<Invocable>(state)(args);
+            else {
+                execvp(std::get<std::string>(state).c_str(), prepareArgTable());
+            }
         }
+        if (isExternalProgram())
+            exit(0);
     }
 
     void Command::setExternalExecution(void) {
