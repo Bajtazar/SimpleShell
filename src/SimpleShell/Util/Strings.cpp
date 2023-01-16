@@ -117,12 +117,15 @@ namespace shell {
             if (str.front() != '\'' && str.front() != '(') {
                 auto split = splitOn(str, splitter);
                 if (split.size() > 1) {
-                    buffer += split.front();
+                    buffer += std::move(split.front());
+                    results.push_back(std::move(buffer));
+                    for (size_t i = 1; i < split.size() - 1; ++i)
+                        results.push_back(std::move(split[i]));
+                    buffer = std::move(split.back());
+                } else if (split.size() && str.back() == ';') {
+                    buffer += std::move(split.front());
                     results.push_back(std::move(buffer));
                     buffer = std::string{};
-                    for (size_t i = 1; i < split.size() - 1; ++i)
-                        results.push_back(split[i]);
-                    buffer = split.back();
                 } else
                     buffer += str;
             } else

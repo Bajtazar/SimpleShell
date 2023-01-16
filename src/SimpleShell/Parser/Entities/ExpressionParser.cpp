@@ -29,7 +29,6 @@ namespace shell {
         Command package {
             [program=programParser, cmnd=args.front()]([[maybe_unused]] Command::Args const& args) {
                 (*program)({ std::next(cmnd.begin()), std::prev(cmnd.end()) });
-                exit(0);
             }
         };
         package.setCallbacks(generateIoctlCallbacks(ioctl, ioctlParser));
