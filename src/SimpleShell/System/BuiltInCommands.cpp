@@ -31,8 +31,13 @@ namespace shell {
             {"cd", [](Args const& args) {
                 if (args.size() > 1)
                     throw std::runtime_error{"Cd can only have 1 argument"};
-                if (chdir(args[0].c_str()) == -1)
-                    throw std::runtime_error{"Invalid directory"};
+                if (args.front() == "~") {
+                    if (char* home = getenv("HOME"))
+                        if (chdir(home) != -1)
+                            return;
+                } else if (chdir(args[0].c_str()) != -1)
+                    return;
+                throw std::runtime_error{"Invalid directory"};
             }},
             {"export", [](Args const& args){
                 if (args.size() > 1)
